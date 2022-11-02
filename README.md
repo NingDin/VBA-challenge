@@ -1,0 +1,112 @@
+# VBA-challenge
+Public Sub Challenge2VBA_For_grading()
+
+Dim x, endd, sum, c As Long
+Dim f, l, change, p As Double
+Dim wc, w As Integer
+wc = ActiveWorkbook.Worksheets.Count
+'x is the cells(x,....); sum is sum volume within a ticker; c is counter for right hand table
+'f(first) is the beginning value;l(last) is end value
+'wc workbook count
+'Public Sub header_on_onepage()
+For w = 1 To wc
+    Worksheets(w).Select
+    Range("I1").Value = "Ticker"
+    Range("J1").Value = "Yearly Change"
+    Range("K1").Value = "Percent Change"
+    Range("L1").Value = "Total Stock volume"
+    'filled header every sheet
+    'f:begining value of a ticker; l:ending value of a ticker; change=l-f;p: pecentage change
+    x = 2
+    endd = Cells(Rows.Count, 1).End(xlUp).Row
+    sum = Cells(2, 7).Value
+    c = 2
+    'c is counter for right hand rows
+    'Debug.Print endd
+    f = Cells(2, 3).Value
+    Range("I2").Value = Cells(2, 1).Value
+    For x = 2 To endd
+        'loop through entire row data sets
+        If Cells(x, 1).Value = Cells(x + 1, 1).Value Then
+            sum = sum + Cells(x + 1, 7).Value
+            'baniary event either equal or not equal
+        Else:
+            c = c + 1
+            'change of ticker act as natural break
+            Range("I" & c).Value = Cells(x + 1, 1).Value
+            'register the new ticker
+            Range("L" & c - 1).Value = sum
+            'register previous ticker total volume
+            sum = Cells(x + 1, 7).Value
+            'reset sum for next ticker
+            l = Cells(x, 6).Value
+            'store the end value of ticker
+            change = l - f
+            p = change / f
+            'get change & percentage done
+            'notice percentage change not right, shouldbe f not l
+            Range("J" & c - 1).Value = change
+                If change > 0 Then
+                    Range("J" & c - 1).Interior.Color = vbGreen
+                Else:
+                    Range("J" & c - 1).Interior.Color = vbRed
+                End If
+            'color code the percentage colunm cell by cell
+            Range("K" & c - 1).Value = p
+            'register the percentage value cell by cell
+            f = Cells(x + 1, 3).Value
+            'assign beggining value
+
+        End If
+    Next x
+    'bonus start'''''''yay
+    Dim v As Integer
+        'varaible for column I ticker data
+    Dim g_vol As Double
+        'store highest volum
+    Dim enddv As Double
+    'endd row of coloumn I/last row of ticker
+    enddv = Cells(Rows.Count, 9).End(xlUp).Row
+    'g_vol highest volume
+    g_vol = Cells(2, 12).Value
+    'register initial ticker volume to start
+    Dim alpha_m, alpha_l As Double
+    'alpha_m: largest change; alphal:lowest change
+    alpha_m = Cells(2, 11).Value
+    alpha_l = Cells(2, 11).Value
+    'both holder start form inital value ABB, data set from range("I:I")
+    For v = 2 To enddv
+    If alpha_m < Cells(v + 1, 11).Value Then
+        alpha_m = Cells(v + 1, 11).Value
+        Cells(2, 17).Value = alpha_m
+        Cells(2, 16).Value = Cells(v + 1, 9).Value
+        'notice nolonger cells(v+1,1) lame on me ioi; find the largest data
+    End If
+    If alpha_l > Cells(v + 1, 11).Value Then
+        alpha_l = Cells(v + 1, 11).Value
+        Cells(3, 17).Value = alpha_l
+        Cells(3, 16).Value = Cells(v + 1, 9).Value
+        'find the smallest one
+    End If
+    If g_vol < Cells(v + 1, 12).Value Then
+        g_vol = Cells(v + 1, 12).Value
+        Cells(4, 17).Value = g_vol
+        Cells(4, 16).Value = Cells(v + 1, 9).Value
+        'find the lastest volume
+        
+    End If
+
+Next v
+    Range("O2").Value = "Greatest%Increase"
+    Range("O3").Value = "Greatest%Decrease"
+    Range("O4").Value = "Greatest Total Volume"
+    Range("Q2", "Q3").NumberFormat = "0.00%"
+    Columns("I:M").AutoFit
+    Columns("k:k").NumberFormat = "0.00%"
+    Range("P1").Value = "Ticker"
+    Range("Q1").Value = "Value"
+    'create table header for bonus,some formating to make it looks good
+Next w
+    'let everything run worksheet by worksheet
+End Sub
+'optimze version !22 sec from start to finish sec ioi; with bonus part muhahahah
